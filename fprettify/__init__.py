@@ -199,10 +199,7 @@ PUBLIC_RE = re.compile(SOL_STR + r"PUBLIC\s*::", RE_FLAGS)
 END_RE = re.compile(SOL_STR + r"(END)\s*(IF|DO|SELECT|ASSOCIATE|BLOCK|SUBROUTINE|FUNCTION|MODULE|SUBMODULE|TYPE|PROGRAM|INTERFACE|ENUM|WHERE|FORALL)", RE_FLAGS)
 
 # intrinsic statements with parenthesis notation that are not functions
-INTR_STMTS_PAR = (r"(ALLOCATE|DEALLOCATE|"
-                  r"OPEN|CLOSE|READ|WRITE|"
-                  r"FLUSH|ENDFILE|REWIND|BACKSPACE|INQUIRE|"
-                  r"FORALL|WHERE|ASSOCIATE|NULLIFY)")
+INTR_STMTS_PAR = (r"(FORALL|WHERE|ASSOCIATE|NULLIFY)")
 
 # regular expressions for parsing linebreaks
 LINEBREAK_STR = r"(&)[\s]*(?:!.*)?$"
