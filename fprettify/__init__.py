@@ -1938,7 +1938,6 @@ def run(argv=sys.argv):  # pragma: no cover
             if parent == dir:
                 break
             dir = parent
-        print(config_file_list, filename)
         return config_file_list
 
     arguments = {'prog': argv[0],
