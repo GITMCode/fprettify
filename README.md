@@ -4,11 +4,20 @@ fprettify is an auto-formatter for modern Fortran code that imposes strict white
 
 This fork of fprettify changes a number of settings from the original repository, [which can be found here](https://github.com/fortran-lang/fprettify).
 
-> Please note that use of the original fprettify will produce code that does not comply with GITM standards.
+Within this document:
+
+- [Limitations](#limitations)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [GITM Python File](#gitm-python-file)
+  - [Command line tool](#command-line-tool)
+- [Examples](#examples)
 
 ## Limitations
 
 - Works only for modern Fortran (Fortran 90 upwards, not `*.f`).
+- The original fprettify will produce code that does not comply with GITM standards.
 
 ## Requirements
 
@@ -48,13 +57,15 @@ Otherwise the flag `-c` can be used to specify the path to the config file. `fpr
 
 ## Usage
 
-Using fprettify to format files can be done in a number of ways. From the command line, as long as the `.fprettify.rc` file is in your home directory or its path specified with `-c`, no other settings need to be changed.
+Using fprettify to format files can be done in a number of ways. From the command line, as long as the `.fprettify.rc` file is in your home directory, or its path specified with `-c`, no other settings need to be changed.
+
+The recommended usage is to install this version of `fprettify` and then call it with the python script included with GITM:
 
 ### GITM Python File
 
-A python file is included in the `GITM/srcPython` directory which will perform the necessary formatting.
+A python file is included in the `GITM/srcPython` directory which will perform the necessary formatting. The script can automatically check line length, find necessary config files, perform formatting in-place, show the formatting `diff`, etc.
 
-The script can automatically check line length, find necessary config files, perform formatting in-place, show the formatting `diff`, etc. As an example, from GITM's root directory, to check if all files pass formatting checks:
+As an example, from GITM's root directory, to check if all files pass formatting checks:
 
 ```sh
 python srcPython/format_GITM.py -f .
