@@ -1,35 +1,97 @@
 # fprettify
 
-[![CI](https://github.com/pseewald/fprettify/actions/workflows/test.yml/badge.svg)](https://github.com/pseewald/fprettify/actions/workflows/test.yml)
-[![Coverage Status](https://coveralls.io/repos/github/pseewald/fprettify/badge.svg?branch=master)](https://coveralls.io/github/pseewald/fprettify?branch=master)
-![PyPI - License](https://img.shields.io/pypi/l/fprettify)
-![PyPI](https://img.shields.io/pypi/v/fprettify)
-[![Code Climate](https://codeclimate.com/github/pseewald/fprettify/badges/gpa.svg)](https://codeclimate.com/github/pseewald/fprettify)
-
 fprettify is an auto-formatter for modern Fortran code that imposes strict whitespace formatting, written in Python.
 
-**NOTE:** I'm looking for help to maintain this repository, see [#127](https://github.com/pseewald/fprettify/issues/127).
+This fork of fprettify changes a number of settings from the original repository, [which can be found here](https://github.com/fortran-lang/fprettify).
 
-## Features
+Within this document:
 
-- Auto-indentation.
-- Line continuations are aligned with the previous opening delimiter `(`, `[` or `(/` or with an assignment operator `=` or `=>`. If none of the above is present, a default hanging indent is applied.
-- Consistent amount of whitespace around operators and delimiters.
-- Removal of extraneous whitespace and consecutive blank lines.
-- Change letter case (upper case / lower case conventions) of intrinsics
-- Tested for editor integration.
-- By default, fprettify causes whitespace changes only and thus preserves revision history.
-- fprettify can handle cpp and [fypp](https://github.com/aradi/fypp) preprocessor directives.
+- [Limitations](#limitations)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [GITM Python File](#gitm-python-file)
+  - [Command line tool](#command-line-tool)
+- [Examples](#examples)
 
 ## Limitations
 
-- Works only for modern Fortran (Fortran 90 upwards).
-- Feature missing? Please create an issue.
+- Works only for modern Fortran (Fortran 90 upwards, not `*.f`).
+- The original fprettify will produce code that does not comply with GITM standards.
 
 ## Requirements
 
 - Python 3 (Python 2.7 no longer supported)
-- [ConfigArgParse](https://pypi.org/project/ConfigArgParse): optional, enables use of config file
+- [ConfigArgParse](https://pypi.org/project/ConfigArgParse), enables use of config files. Installed automatically with the below procedure.
+
+## Installation
+
+The GITM version of fprettify **cannot** be installed with `pip` or `conda`. Instead, this version must be built from source.
+
+First, ensure you have a working python 3 distribution. It is recommended to use a clean environment, but not required.
+
+> When contributing to GITM, we recommend placing the `fprettify` repository into the `srcPython` folder. This will help the bundled scripts find the necessary dependencies, but is of course not required.
+
+Clone this repository & `cd` into it.
+
+```sh
+git clone git@github.com:GITMCode/fprettify.git
+cd fprettify
+```
+
+Then install with:
+
+```sh
+pip install .
+```
+
+Or `python setup.py install`
+
+Following this procedure should allow the use of fprettify from the command line in any directory. To enable fprettify to always find the GITM configuration file, it is recommended to copy it to your home directory:
+
+```sh
+cp .fprettify.rc ~/
+```
+
+Otherwise the flag `-c` can be used to specify the path to the config file. `fprettify` will print a warning that no configuration file was found but will not error.
+
+## Usage
+
+Using fprettify to format files can be done in a number of ways. From the command line, as long as the `.fprettify.rc` file is in your home directory, or its path specified with `-c`, no other settings need to be changed.
+
+The recommended usage is to install this version of `fprettify` and then call it with the python script included with GITM:
+
+### GITM Python File
+
+A python file is included in the `GITM/srcPython` directory which will perform the necessary formatting. The script can automatically check line length, find necessary config files, perform formatting in-place, show the formatting `diff`, etc.
+
+As an example, from GITM's root directory, to check if all files pass formatting checks:
+
+```sh
+python srcPython/format_GITM.py -f .
+```
+
+This will check line lengths, then call `fprettify` in diff mode. If anything is output from fprettify (so changes are recommended), the "formatting test" has failed.
+
+Use `-a` to format in-place automatically, or `-h` to see all other available options.
+
+### Command line tool
+
+Autoformat file1, file2, ... inplace by
+
+```sh
+fprettify file1, file2, ...
+```
+
+The default indent is 2. If you prefer something else during development, use `-i n` argument. Just remember to change back to defaults before submitting a pull request.
+
+In order to apply fprettify recursively to an entire Fortran project, use the `-r` option.
+
+For more options, read
+
+```sh
+fprettify -h
+```
 
 ## Examples
 
@@ -55,102 +117,16 @@ end program
 
 ```Fortran
 program demo
-   integer :: endif, if, elseif
-   integer, DIMENSION(2) :: function
-   endif = 3; if = 2
-   if (endif == 2) then
+  integer :: endif, if, elseif
+  integer, DIMENSION(2) :: function
+  endif = 3; if = 2
+  if (endif == 2) then
       endif = 5
       elseif = if + 4*(endif + &
-                       2**10)
-   elseif (endif == 3) then
-      function(if) = endif/elseif
-      print *, endif
-   endif
+                      2**10)
+  elseif (endif == 3) then
+    function(if) = endif/elseif
+    print *, endif
+  endif
 end program
 ```
-
-## Installation
-
-The latest release can be installed using pip:
-
-```sh
-pip install --upgrade fprettify
-```
-
-Installation from source requires Python Setuptools:
-
-```sh
-pip install .
-```
-
-For local installation, use `--user` option.
-
-If you use the [Conda](https://docs.conda.io/) package manager, fprettify is available from the [conda-forge](https://conda-forge.org/) channel:
-
-```sh
-conda install -c conda-forge fprettify
-```
-
-## Command line tool
-
-Autoformat file1, file2, ... inplace by
-
-```sh
-fprettify file1, file2, ...
-```
-
-The default indent is 3. If you prefer something else, use `--indent n` argument.
-
-In order to apply fprettify recursively to an entire Fortran project instead of a single file, use the `-r` option.
-
-For more options, read
-
-```sh
-fprettify -h
-```
-
-## Editor integration
-
-For editor integration, use
-
-```sh
-fprettify --silent
-```
-
-For instance, with Vim, use fprettify with `gq` by putting the following commands in your `.vimrc`:
-
-```vim
-autocmd Filetype fortran setlocal formatprg=fprettify\ --silent
-```
-
-## Deactivation and manual formatting (experimental feature)
-
-fprettify can be deactivated for selected lines: a single line followed by an inline comment starting with `!&` is not auto-formatted and consecutive lines that are enclosed between two comment lines `!&<` and `!&>` are not auto-formatted. This is useful for cases where manual alignment is preferred over auto-formatting. Furthermore, deactivation is necessary when non-standard Fortran syntax (such as advanced usage of preprocessor directives) prevents proper formatting. As an example, consider the following snippet of fprettify formatted code:
-
-```fortran
-A = [-1, 10, 0, &
-     0, 1000, 0, &
-     0, -1, 1]
-```
-
-In order to manually align the columns, fprettify needs to be deactivated by
-
-```fortran
-A = [-1,   10, 0, & !&
-      0, 1000, 0, & !&
-      0,   -1, 1]   !&
-```
-
-or, equivalently by
-
-```fortran
-!&<
-A = [-1,   10, 0, &
-      0, 1000, 0, &
-      0,   -1, 1]
-!&>
-```
-
-## Contributing / Testing
-
-The testing mechanism allows you to easily test fprettify with any Fortran project of your choice. Simply clone or copy your entire project into `fortran_tests/before` and run `python setup.py test`. The directory `fortran_tests/after` contains the test output (reformatted Fortran files). If testing fails, please submit an issue!

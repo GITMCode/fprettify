@@ -199,10 +199,7 @@ PUBLIC_RE = re.compile(SOL_STR + r"PUBLIC\s*::", RE_FLAGS)
 END_RE = re.compile(SOL_STR + r"(END)\s*(IF|DO|SELECT|ASSOCIATE|BLOCK|SUBROUTINE|FUNCTION|MODULE|SUBMODULE|TYPE|PROGRAM|INTERFACE|ENUM|WHERE|FORALL)", RE_FLAGS)
 
 # intrinsic statements with parenthesis notation that are not functions
-INTR_STMTS_PAR = (r"(ALLOCATE|DEALLOCATE|"
-                  r"OPEN|CLOSE|READ|WRITE|"
-                  r"FLUSH|ENDFILE|REWIND|BACKSPACE|INQUIRE|"
-                  r"FORALL|WHERE|ASSOCIATE|NULLIFY)")
+INTR_STMTS_PAR = (r"(FORALL|WHERE|ASSOCIATE|NULLIFY)")
 
 # regular expressions for parsing linebreaks
 LINEBREAK_STR = r"(&)[\s]*(?:!.*)?$"
@@ -1949,23 +1946,25 @@ def run(argv=sys.argv):  # pragma: no cover
 
     if argparse.__name__ == "configargparse":
         arguments['args_for_setting_config_path'] = ['-c', '--config-file']
-        arguments['description'] = arguments['description'] + " Config files ('.fprettify.rc') in the home (~) directory and any such files located in parent directories of the input file will be used. When the standard input is used, the search is started from the current directory."
+        arguments['description'] = arguments['description'] +\
+              " Config files ('.fprettify.rc') in the home (~) directory and any such files located in parent directories of the input file will be used. When the standard input is used, the search is started from the current directory."
 
     def get_arg_parser(args):
         """helper function to create the parser object"""
         parser = argparse.ArgumentParser(**args)
 
-        parser.add_argument("-i", "--indent", type=int, default=3,
-                            help="relative indentation width")
-        parser.add_argument("-l", "--line-length", type=int, default=132,
-                            help="column after which a line should end, viz. -ffree-line-length-n for GCC")
+        parser.add_argument("-i", "--indent", type=int, default=2,
+                            help="relative indentation width (default=2)")
+        parser.add_argument("-l", "--line-length", type=int, default=120,
+                            help="column after which a line should end,(default=120)")
         parser.add_argument("-w", "--whitespace", type=int,
-                            choices=range(0, 5), default=2, help="Presets for the amount of whitespace - "
-                                                                 "   0: minimal whitespace"
-                                                                 " | 1: operators (except arithmetic), print/read"
-                                                                 " | 2: operators, print/read, plus/minus"
-                                                                 " | 3: operators, print/read, plus/minus, muliply/divide"
-                                                                 " | 4: operators, print/read, plus/minus, muliply/divide, type component selector")
+                            choices=range(0, 5), default=2, 
+                            help="Presets for the amount of whitespace - "
+                                "   0: minimal whitespace"
+                                " | 1: operators (except arithmetic), print/read"
+                                " | 2: operators, print/read, plus/minus"
+                                " | 3: operators, print/read, plus/minus, muliply/divide"
+                                " | 4: operators, print/read, plus/minus, muliply/divide, type component selector")
         parser.add_argument("--whitespace-comma", type=str2bool, nargs="?", default="None", const=True,
                             help="boolean, en-/disable whitespace for comma/semicolons")
         parser.add_argument("--whitespace-assignment", type=str2bool, nargs="?", default="None", const=True,
@@ -1986,19 +1985,27 @@ def run(argv=sys.argv):  # pragma: no cover
                             help="boolean, en-/disable whitespace for select type components")
         parser.add_argument("--whitespace-intrinsics", type=str2bool, nargs="?", default="None", const=True,
                             help="boolean, en-/disable whitespace for intrinsics like if/write/close")
-        parser.add_argument("--strict-indent", action='store_true', default=False, help="strictly impose indentation even for nested loops")
-        parser.add_argument("--enable-decl", action="store_true", default=False, help="enable whitespace formatting of declarations ('::' operator).")
-        parser.add_argument("--disable-indent", action='store_true', default=False, help="don't impose indentation")
-        parser.add_argument("--disable-whitespace", action='store_true', default=False, help="don't impose whitespace formatting")
-        parser.add_argument("--enable-replacements", action='store_true', default=False, help="replace relational operators (e.g. '.lt.' <--> '<')")
-        parser.add_argument("--c-relations", action='store_true', default=False, help="C-style relational operators ('<', '<=', ...)")
-        parser.add_argument("--case", nargs=4, default=[0,0,0,0], type=int, help="Enable letter case formatting of intrinsics by specifying which of "
+        parser.add_argument("--strict-indent", action='store_true', default=False, 
+                            help="strictly impose indentation even for nested loops")
+        parser.add_argument("--enable-decl", action="store_true", default=False,
+                             help="enable whitespace formatting of declarations ('::' operator).")
+        parser.add_argument("--disable-indent", action='store_true', default=False,
+                             help="don't impose indentation")
+        parser.add_argument("--disable-whitespace", action='store_true', default=False, 
+                            help="don't impose whitespace formatting")
+        parser.add_argument("--enable-replacements", action='store_true', default=False,
+                             help="replace relational operators (e.g. '.lt.' <--> '<')")
+        parser.add_argument("--c-relations", action='store_true', default=False,
+                             help="C-style relational operators ('<', '<=', ...)")
+        parser.add_argument("--case", nargs=4, default=[0,0,0,0], type=int,
+                             help="Enable letter case formatting of intrinsics by specifying which of "
                             "keywords, procedures/modules, operators and constants (in this order) should be lowercased or uppercased - "
                             "   0: do nothing"
                             " | 1: lowercase"
                             " | 2: uppercase")
 
-        parser.add_argument("--strip-comments", action='store_true', default=False, help="strip whitespaces before comments")
+        parser.add_argument("--strip-comments", action='store_true', default=False, 
+                            help="strip whitespaces before comments")
         parser.add_argument('--disable-fypp', action='store_true', default=False,
                             help="Disables the indentation of fypp preprocessor blocks.")
         parser.add_argument('--disable-indent-mod', action='store_true', default=False,
@@ -2095,7 +2102,9 @@ def run(argv=sys.argv):  # pragma: no cover
             # reparse arguments using the file's list of config files
             filearguments = arguments
             if argparse.__name__ == "configargparse":
-                filearguments['default_config_files'] = ['~/.fprettify.rc'] + get_config_file_list(os.path.abspath(filename) if filename != '-' else os.getcwd())
+                filearguments['default_config_files'] = ['~/.fprettify.rc'] \
+                      + get_config_file_list(os.path.abspath(filename) \
+                                             if filename != '-' else os.getcwd())
             file_argparser = get_arg_parser(filearguments)
             file_args = file_argparser.parse_args(argv[1:])
             ws_dict = build_ws_dict(file_args)
