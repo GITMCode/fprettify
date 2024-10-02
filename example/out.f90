@@ -9,6 +9,25 @@ program demo
   elseif (endif == 3) then
     function(if) = endif/elseif
     print *, endif
-    write (*, *) "something"
-  end if
+    write(*, *) "something"
+  endif
+
+  endIF
+endDO
+endif
+enddo
+end SELECT
+end ASSOCIATE
+end BLOCK
+end SUBROUTINE
+end FUNCTION
+end MODULE
+end SUBMODULE
+end TYPE
+end PROGRAM
+end INTERFACE
+end ENUM
+end WHERE
+end FORALL
+
 end program

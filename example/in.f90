@@ -12,22 +12,22 @@ program demo
     write (*,*)"something"
     endif
 
-endIF
-endDO
+end IF
+end DO
+endif
+enddo
 endSELECT
 endASSOCIATE
 endBLOCK
 endSUBROUTINE
 endFUNCTION
-endMODULE
+end MODULE
 endSUBMODULE
-endTYPE
+end TYPE
 endPROGRAM
 endINTERFACE
 endENUM
-endWHERE
+end WHERE
 endFORALL
 
-
-
-    end progra
+end program
