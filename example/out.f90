@@ -19,7 +19,6 @@ enddo
 end SELECT
 end ASSOCIATE
 end BLOCK
-end SUBROUTINE
 end FUNCTION
 end MODULE
 end SUBMODULE

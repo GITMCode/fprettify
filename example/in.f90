@@ -1,3 +1,8 @@
+
+
+! this code is nonsense.
+! Just proof-of-concept for formatter.
+
 program demo
     integer :: endif,if,elseif
     integer,DIMENSION(2) :: function
@@ -19,7 +24,6 @@ enddo
 endSELECT
 endASSOCIATE
 endBLOCK
-endSUBROUTINE
 endFUNCTION
 end MODULE
 endSUBMODULE
