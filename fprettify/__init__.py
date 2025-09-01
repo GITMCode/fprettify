@@ -2070,6 +2070,7 @@ def run(argv=sys.argv):  # pragma: no cover
         args.path = ['-' if _ == 'stdin' else _ for _ in args.path]
 
     for directory in args.path:
+        filenames = []
         if directory == '-':
             if args.recursive:
                 sys.stderr.write("--recursive requires a directory.\n")
@@ -2083,14 +2084,13 @@ def run(argv=sys.argv):  # pragma: no cover
                 sys.stderr.write("file " + directory + " does not exist!\n")
                 sys.exit(1)
 
-        if not args.recursive:
-            filenames = [directory]
+        if os.path.isfile(directory):
+            filenames.append(directory)
         else:
             if args.fortran:
                 ext = args.fortran
             else:
                 ext = FORTRAN_EXTENSIONS
-            filenames = []
 
             from fnmatch import fnmatch
 
